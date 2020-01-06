@@ -336,49 +336,47 @@ abstract public class RenderableView extends VirtualView {
     void draw(Canvas canvas, Paint paint, float opacity) {
         opacity *= mOpacity;
 
-        if (opacity > MIN_OPACITY_FOR_DRAW) {
-            boolean computePaths = mPath == null;
-            if (computePaths) {
-                mPath = getPath(canvas, paint);
-                mPath.setFillType(fillRule);
-            }
-            boolean nonScalingStroke = vectorEffect == VECTOR_EFFECT_NON_SCALING_STROKE;
-            Path path = mPath;
-            if (nonScalingStroke) {
-                Path scaled = new Path();
-                //noinspection deprecation
-                mPath.transform(mCTM, scaled);
-                canvas.setMatrix(null);
-                path = scaled;
-            }
-
-            if (computePaths || path != mPath) {
-                mBox = new RectF();
-                path.computeBounds(mBox, true);
-            }
-
-            RectF clientRect = new RectF(mBox);
-            mCTM.mapRect(clientRect);
-            this.setClientRect(clientRect);
-
-            clip(canvas, paint);
-
-            if (setupFillPaint(paint, opacity * fillOpacity)) {
-                if (computePaths) {
-                    mFillPath = new Path();
-                    paint.getFillPath(path, mFillPath);
-                }
-                canvas.drawPath(path, paint);
-            }
-            if (setupStrokePaint(paint, opacity * strokeOpacity)) {
-                if (computePaths) {
-                    mStrokePath = new Path();
-                    paint.getFillPath(path, mStrokePath);
-                }
-                canvas.drawPath(path, paint);
-            }
-            renderMarkers(canvas, paint, opacity);
+        boolean computePaths = mPath == null;
+        if (computePaths) {
+            mPath = getPath(canvas, paint);
+            mPath.setFillType(fillRule);
         }
+        boolean nonScalingStroke = vectorEffect == VECTOR_EFFECT_NON_SCALING_STROKE;
+        Path path = mPath;
+        if (nonScalingStroke) {
+            Path scaled = new Path();
+            //noinspection deprecation
+            mPath.transform(mCTM, scaled);
+            canvas.setMatrix(null);
+            path = scaled;
+        }
+
+        if (computePaths || path != mPath) {
+            mBox = new RectF();
+            path.computeBounds(mBox, true);
+        }
+
+        RectF clientRect = new RectF(mBox);
+        mCTM.mapRect(clientRect);
+        this.setClientRect(clientRect);
+
+        clip(canvas, paint);
+
+        if (setupFillPaint(paint, opacity * fillOpacity)) {
+            if (computePaths) {
+                mFillPath = new Path();
+                paint.getFillPath(path, mFillPath);
+            }
+            canvas.drawPath(path, paint);
+        }
+        if (setupStrokePaint(paint, opacity * strokeOpacity)) {
+            if (computePaths) {
+                mStrokePath = new Path();
+                paint.getFillPath(path, mStrokePath);
+            }
+            canvas.drawPath(path, paint);
+        }
+        renderMarkers(canvas, paint, opacity);
     }
 
     void renderMarkers(Canvas canvas, Paint paint, float opacity) {
@@ -421,7 +419,7 @@ abstract public class RenderableView extends VirtualView {
      * Sets up paint according to the props set on a view. Returns {@code true}
      * if the fill should be drawn, {@code false} if not.
      */
-    private boolean setupFillPaint(Paint paint, float opacity) {
+    boolean setupFillPaint(Paint paint, float opacity) {
         if (fill != null && fill.size() > 0) {
             paint.reset();
             paint.setFlags(Paint.ANTI_ALIAS_FLAG | Paint.DEV_KERN_TEXT_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
@@ -436,7 +434,7 @@ abstract public class RenderableView extends VirtualView {
      * Sets up paint according to the props set on a view. Returns {@code true}
      * if the stroke should be drawn, {@code false} if not.
      */
-    private boolean setupStrokePaint(Paint paint, float opacity) {
+    boolean setupStrokePaint(Paint paint, float opacity) {
         paint.reset();
         double strokeWidth = relativeOnOther(this.strokeWidth);
         if (strokeWidth == 0 || stroke == null || stroke.size() == 0) {
