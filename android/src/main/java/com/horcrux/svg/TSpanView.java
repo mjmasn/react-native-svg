@@ -257,10 +257,6 @@ class TSpanView extends TextView {
             return mCachedPath;
         }
 
-        if (canvas == null || paint == null) {
-            return null;
-        }
-
         setupTextPath();
 
         pushGlyphContext();
