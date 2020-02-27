@@ -383,6 +383,9 @@ UInt32 saturate(CGFloat value) {
     CGPoint mid = CGPointMake(CGRectGetMidX(pathBounds), CGRectGetMidY(pathBounds));
     CGPoint center = CGPointApplyAffineTransform(mid, matrix);
 
+    if (isnan(bounds.size.width) || isnan(bounds.size.height)) {
+        return;
+    }
     self.bounds = bounds;
     if (!isnan(center.x) && !isnan(center.y)) {
         self.center = center;
