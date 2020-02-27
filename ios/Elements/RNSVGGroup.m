@@ -97,6 +97,9 @@
         CGPoint mid = CGPointMake(CGRectGetMidX(bounds), CGRectGetMidY(bounds));
         CGPoint center = CGPointApplyAffineTransform(mid, transform);
 
+        if (isnan(bounds.size.width) || isnan(bounds.size.height)) {
+            return;
+        }
         self.bounds = bounds;
         if (!isnan(center.x) && !isnan(center.y)) {
             self.center = center;
