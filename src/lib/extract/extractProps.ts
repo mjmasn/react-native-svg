@@ -46,6 +46,7 @@ export default function extractProps(
     markerMid?: string;
     markerEnd?: string;
     clipPath?: string;
+    display?: string;
     opacity?: NumberProp;
     onLayout?: () => void;
     transform?: number[] | string | TransformProps;
@@ -57,11 +58,12 @@ export default function extractProps(
   ref: Object,
 ) {
   const {
+    id,
     opacity,
     onLayout,
-    id,
     clipPath,
     clipRule,
+    display,
     mask,
     marker,
     markerStart = marker,
@@ -85,6 +87,7 @@ export default function extractProps(
     markerEnd?: string;
     clipPath?: string;
     clipRule?: number;
+    display?: string;
   } = {
     matrix,
     ...transformProps,
@@ -93,6 +96,7 @@ export default function extractProps(
     ...extractResponder(props, ref),
     ...extractFill(props, styleProperties),
     ...extractStroke(props, styleProperties),
+    display: display === 'none' ? 'none' : undefined,
   };
 
   if (onLayout) {
@@ -113,23 +117,19 @@ export default function extractProps(
     extracted.name = String(id);
   }
 
+  if (clipRule) {
+    extracted.clipRule = clipRules[clipRule] === 0 ? 0 : 1;
+  }
   if (clipPath) {
-    if (clipRule) {
-      extracted.clipRule = clipRules[clipRule] === 0 ? 0 : 1;
-    }
-
-    if (clipPath) {
-      const matched = clipPath.match(idPattern);
-
-      if (matched) {
-        extracted.clipPath = matched[1];
-      } else {
-        console.warn(
-          'Invalid `clipPath` prop, expected a clipPath like "#id", but got: "' +
-            clipPath +
-            '"',
-        );
-      }
+    const matched = clipPath.match(idPattern);
+    if (matched) {
+      extracted.clipPath = matched[1];
+    } else {
+      console.warn(
+        'Invalid `clipPath` prop, expected a clipPath like "#id", but got: "' +
+          clipPath +
+          '"',
+      );
     }
   }
 
@@ -148,4 +148,15 @@ export default function extractProps(
   }
 
   return extracted;
+}
+
+export function extract(instance: Object, props: Object & { style?: [] | {} }) {
+  return extractProps(propsAndStyles(props), instance);
+}
+
+export function withoutXY(
+  instance: Object,
+  props: Object & { style?: [] | {} },
+) {
+  return extractProps({ ...propsAndStyles(props), x: null, y: null }, instance);
 }
